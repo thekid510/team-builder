@@ -1,25 +1,76 @@
-import logo from './logo.svg';
+import React, { useState, useEffect} from "react"
 import './App.css';
+import Friend from "./Friend";
+import FriendForm from "./FriendForm";
+import axios from "axios";
 
-function App() {
+
+const initialFormValues = {
+
+  username: "",
+  email: "",
+
+  role: "",
+};
+
+export default function App() {
+  const [friends, setFriends] = useState([]); // careful what you initialize your state to
+
+  
+  const [formValues, setFormValues] = useState(initialFormValues);
+
+  
+
+  const updateForm = (inputName, inputValue) => {
+   
+    setFormValues({
+      ...formValues,
+      [inputName]: inputValue,
+    });
+  };
+
+  const submitForm = () => {
+    
+    const newFriend = {
+      username: formValues.username.trim(),
+      email: formValues.email.trim(),
+      role: formValues.role,
+    };
+   
+    if (!newFriend.username || !newFriend.email || !newFriend.role) return;
+    
+    axios
+      .post("fakeapi.com", newFriend)
+      .then((res) => {
+        setFriends([newFriend, ...friends]);
+        setFormValues(initialFormValues);
+      })
+      .catch((err) => {
+        debugger;
+      });
+    
+  };
+
+  useEffect(() => {
+    axios.get("fakeapi.com").then((res) => setFriends(res.data));
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      <h1>Form App</h1>
+
+      <FriendForm
+       
+        values={formValues}
+        update={updateForm}
+        submit={submitForm}
+      />
+
+      {friends.map((friend) => {
+        return <Friend key={friend.id} details={friend} />;
+      })}
     </div>
   );
 }
 
-export default App;
+
