@@ -29,7 +29,8 @@ export default function App() {
     });
   };
 
-  const submitForm = () => {
+  const submitForm = (ev) => {
+    ev.preventDefault();
     
     const newFriend = {
       username: formValues.username.trim(),
@@ -38,15 +39,15 @@ export default function App() {
     };
    
     if (!newFriend.username || !newFriend.email || !newFriend.role) return;
-    
+    setFormValues(initialFormValues);
     axios
       .post("fakeapi.com", newFriend)
       .then((res) => {
         setFriends([newFriend, ...friends]);
-        setFormValues(initialFormValues);
+        
       })
       .catch((err) => {
-        debugger;
+        
       });
     
   };
